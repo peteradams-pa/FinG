@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#0A0E1A"/>
+<title>FinG</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root {
+  --bg:        #070B16;
+  --bg2:       #0D1225;
+  --bg3:       #121830;
+  --bg4:       #18203A;
+  --border:    #1E2A45;
+  --border2:   #2A3A5C;
+  --gold:      #C9982A;
+  --gold2:     #E8B84B;
+  --gold3:     #F5D280;
+  --gold-dim:  rgba(201,152,42,0.12);
+  --gold-glow: rgba(201,152,42,0.25);
+  --blue:      #3D6FA8;
+  --blue2:     #5B8DC7;
+  --blue-dim:  rgba(61,111,168,0.15);
+  --green:     #2ECC8A;
+  --green-dim: rgba(46,204,138,0.12);
+  --red:       #E05252;
+  --red-dim:   rgba(224,82,82,0.12);
+  --amber:     #F5A623;
+  --text:      #E8EDF5;
+  --text2:     #9AA5BE;
+  --text3:     #5A6A8A;
+  --font-h:    'Syne', sans-serif;
+  --font-b:    'Inter', sans-serif;
+  --font-m:    'DM Mono', monospace;
+  --r:         12px;
+  --r2:        8px;
+  --safe-top:  env(safe-area-inset-top, 0px);
+  --safe-bot:  env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SHELL ─────────────────────────────────────────────────────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── HEADER ───────────────────────────────────────────────────────── */
+#header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--safe-top) + 16px) 20px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-h);
+  font-size: 15px; font-weight: 800;
+  color: var(--bg);
+  letter-spacing: -0.5px;
+  box-shadow: 0 4px 16px var(--gold-glow);
+  flex-shrink: 0;
+}
+.logo-text { font-family: var(--font-h); font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+.logo-sub { font-family: var(--font-m); font-size: 10px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+.header-date { font-family: var(--font-m); font-size: 11px; color: var(--text3); text-align: right; line-height: 1.4; }
+
+/* ── TABS ─────────────────────────────────────────────────────────── */
+#tabs {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+#tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  font-family: var(--font-h);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text3);
+  transition: background 0.2s;
+}
+.tab.active .tab-dot { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+
+/* ── CONTENT AREA ─────────────────────────────────────────────────── */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 0 calc(var(--safe-bot) + 20px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+#content::-webkit-scrollbar { width: 3px; }
+#content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.page { display: none; animation: fadeUp 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── COMMON COMPONENTS ────────────────────────────────────────────── */
+.section-pad { padding: 20px; }
+.section-title {
+  font-family: var(--font-h);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  display: block;
+  width: 3px; height: 14px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+}
+
+/* ── DASHBOARD ────────────────────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card.gold-accent { border-color: rgba(201,152,42,0.3); }
+.stat-card.blue-accent { border-color: rgba(61,111,168,0.3); }
+.stat-card.green-accent { border-color: rgba(46,204,138,0.3); }
+.stat-label { font-family: var(--font-m); font-size: 10px; color: var(--text3); letter-spacing: 0.5px; margin-bottom: 6px; }
+.stat-value { font-family: var(--font-h); font-size: 28px; font-weight: 800; color: var(--text); line-height: 1; }
+.stat-unit { font-family: var(--font-m); font-size: 11px; color: var(--text3); margin-top: 2px; }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+.stat-card .accent-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+.gold-accent .accent-bar { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+.blue-accent .accent-bar { background: linear-gradient(90deg, var(--blue), var(--blue2)); }
+.green-accent .accent-bar { background: linear-gradient(90deg, var(--green), #5EFAB0); }
+
+/* ── TIMER ────────────────────────────────────────────────────────── */
+.timer-display {
+  text-align: center;
+  padding: 28px 20px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.timer-ring-wrap { position: relative; display: inline-block; margin-bottom: 16px; }
+.timer-ring {
+  width: 180px; height: 180px;
+  transform: rotate(-90deg);
+}
+.timer-ring-bg { fill: none; stroke: var(--bg3); stroke-width: 8; }
+.timer-ring-prog {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 502;
+  stroke-dashoffset: 502;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  filter: drop-shadow(0 0 8px var(--gold-glow));
+}
+.timer-ring-prog.running { stroke: var(--gold2); }
+.timer-time {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+  font-family: var(--font-h);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.timer-label { font-family: var(--font-m); font-size: 11px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.timer-domain-select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 13px;
+  padding: 10px 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.timer-controls { display: flex; gap: 10px; }
+.btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: var(--r2);
+  font-family: var(--font-h);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+.btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: var(--bg); }
+.btn-primary:active { transform: scale(0.97); }
+.btn-secondary { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); }
+.btn-danger { background: var(--red-dim); border: 1px solid rgba(224,82,82,0.3); color: var(--red); }
+
+/* ── KPI BARS ─────────────────────────────────────────────────────── */
+.kpi-item { margin-bottom: 14px; }
+.kpi-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.kpi-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.kpi-val { font-family: var(--font-m); font-size: 12px; color: var(--text2); }
+.kpi-bar-bg { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.kpi-bar { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); min-width: 0; }
+.kpi-bar.gold { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+.kpi-bar.blue { background: linear-gradient(90deg, var(--blue), var(--blue2)); }
+.kpi-bar.green { background: linear-gradient(90deg, var(--green), #5EFAB0); }
+.kpi-bar.amber { background: linear-gradient(90deg, var(--amber), #FFCF6B); }
+.kpi-bar.over { background: linear-gradient(90deg, var(--green), #5EFAB0); box-shadow: 0 0 8px var(--green-dim); }
+
+/* ── ROADMAP ──────────────────────────────────────────────────────── */
+.quarter-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.quarter-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  gap: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.quarter-header:active { background: var(--bg3); }
+.q-badge {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-h);
+  font-size: 12px; font-weight: 800;
+  flex-shrink: 0;
+}
+.q-badge.active { background: var(--gold-dim); border: 1px solid var(--gold); color: var(--gold); }
+.q-badge.done { background: var(--green-dim); border: 1px solid var(--green); color: var(--green); }
+.q-badge.future { background: var(--bg3); border: 1px solid var(--border); color: var(--text3); }
+.q-info { flex: 1; min-width: 0; }
+.q-title { font-family: var(--font-h); font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.q-theme { font-family: var(--font-m); font-size: 10px; color: var(--text3); margin-top: 2px; }
+.q-progress-text { font-family: var(--font-m); font-size: 11px; text-align: right; flex-shrink: 0; }
+.q-chevron { font-size: 16px; color: var(--text3); flex-shrink: 0; transition: transform 0.3s; }
+.quarter-card.open .q-chevron { transform: rotate(180deg); }
+.q-progress-bar { height: 3px; background: var(--bg3); }
+.q-progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); transition: width 0.5s ease; }
+.quarter-body { display: none; padding: 0 16px 16px; }
+.quarter-card.open .quarter-body { display: block; animation: fadeUp 0.2s ease; }
+
+.task-section-title { font-family: var(--font-m); font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin: 14px 0 8px; }
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.task-item:last-child { border-bottom: none; }
+.task-cb {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  margin-top: 1px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.task-cb:checked {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.task-cb:checked::after { content: '✓'; font-size: 11px; color: var(--bg); font-weight: 700; }
+.task-text { font-size: 13px; color: var(--text2); line-height: 1.4; flex: 1; }
+.task-text.done { color: var(--text3); text-decoration: line-through; }
+.task-tag { font-family: var(--font-m); font-size: 9px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+.tag-cert { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(201,152,42,0.2); }
+.tag-proj { background: var(--blue-dim); color: var(--blue2); border: 1px solid rgba(61,111,168,0.2); }
+.tag-tech { background: var(--green-dim); color: var(--green); border: 1px solid rgba(46,204,138,0.2); }
+.tag-book { background: rgba(245,166,35,0.1); color: var(--amber); border: 1px solid rgba(245,166,35,0.2); }
+
+/* ── WORK LOG ─────────────────────────────────────────────────────── */
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.log-item:last-child { border-bottom: none; }
+.log-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.log-domain { font-family: var(--font-m); font-size: 11px; color: var(--text2); flex: 1; }
+.log-dur { font-family: var(--font-m); font-size: 12px; color: var(--gold); flex-shrink: 0; }
+.log-time { font-family: var(--font-m); font-size: 10px; color: var(--text3); flex-shrink: 0; }
+
+/* ── WEEKLY HEATMAP ───────────────────────────────────────────────── */
+.heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px; }
+.heatmap-day { aspect-ratio: 1; border-radius: 3px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-family: var(--font-m); font-size: 8px; color: var(--text3); }
+.heatmap-day.h1 { background: rgba(201,152,42,0.2); }
+.heatmap-day.h2 { background: rgba(201,152,42,0.4); }
+.heatmap-day.h3 { background: rgba(201,152,42,0.65); color: var(--bg); }
+.heatmap-day.h4 { background: var(--gold); color: var(--bg); }
+.heatmap-labels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.heatmap-lbl { font-family: var(--font-m); font-size: 9px; color: var(--text3); text-align: center; }
+
+/* ── RESOURCES ────────────────────────────────────────────────────── */
+.resource-filters {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+}
+.resource-filters::-webkit-scrollbar { display: none; }
+.filter-btn {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  font-family: var(--font-m);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.filter-btn.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+.resource-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.resource-item:last-child { border-bottom: none; }
+.resource-type-badge {
+  font-family: var(--font-m);
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.res-book { background: rgba(245,166,35,0.1); color: var(--amber); border: 1px solid rgba(245,166,35,0.25); }
+.res-ocw { background: var(--blue-dim); color: var(--blue2); border: 1px solid rgba(61,111,168,0.25); }
+.res-cert { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(201,152,42,0.25); }
+.res-doc { background: var(--green-dim); color: var(--green); border: 1px solid rgba(46,204,138,0.25); }
+.resource-info { flex: 1; min-width: 0; }
+.resource-title { font-size: 13px; color: var(--text); line-height: 1.3; margin-bottom: 2px; }
+.resource-domain { font-family: var(--font-m); font-size: 10px; color: var(--text3); }
+
+/* ── CERT TRACKER ─────────────────────────────────────────────────── */
+.cert-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.cert-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.cert-logo {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-h);
+  font-size: 14px; font-weight: 800;
+  flex-shrink: 0;
+}
+.cert-logo.fmva { background: linear-gradient(135deg,#1A3A5C,#2E5F8A); color: #5B8DC7; border: 1px solid rgba(61,111,168,0.3); }
+.cert-logo.frm { background: linear-gradient(135deg,#3A1A1A,#8A2E2E); color: #C75B5B; border: 1px solid rgba(168,61,61,0.3); }
+.cert-logo.cisa { background: linear-gradient(135deg,#1A3A1A,#2E8A3A); color: #5BC77A; border: 1px solid rgba(46,138,58,0.3); }
+.cert-logo.cfe { background: linear-gradient(135deg,#3A2A1A,#8A6A2E); color: #C7A45B; border: 1px solid rgba(138,106,46,0.3); }
+.cert-info { flex: 1; }
+.cert-name { font-family: var(--font-h); font-size: 16px; font-weight: 700; color: var(--text); }
+.cert-body { font-family: var(--font-m); font-size: 11px; color: var(--text3); }
+.cert-status {
+  font-family: var(--font-m);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.status-studying { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(201,152,42,0.3); }
+.status-scheduled { background: var(--blue-dim); color: var(--blue2); border: 1px solid rgba(61,111,168,0.3); }
+.status-passed { background: var(--green-dim); color: var(--green); border: 1px solid rgba(46,204,138,0.3); }
+.status-pending { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+.cert-progress-label { display: flex; justify-content: space-between; margin-bottom: 6px; font-family: var(--font-m); font-size: 11px; color: var(--text3); }
+.cert-bar-bg { height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+.cert-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.cert-bar-fill.fmva { background: linear-gradient(90deg, var(--blue), var(--blue2)); }
+.cert-bar-fill.frm { background: linear-gradient(90deg, #C75B5B, #E88080); }
+.cert-bar-fill.cisa { background: linear-gradient(90deg, var(--green), #5EFAB0); }
+.cert-bar-fill.cfe { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+.cert-domain-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.cert-domain-chip {
+  font-family: var(--font-m);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text3);
+}
+.cert-domain-chip.done { background: var(--green-dim); border-color: rgba(46,204,138,0.3); color: var(--green); }
+
+/* ── INPUT ────────────────────────────────────────────────────────── */
+.input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 13px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input:focus { border-color: var(--gold); }
+.input::placeholder { color: var(--text3); }
+.select-input {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 12px;
+  padding: 10px 12px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+/* ── DOMAIN COLORS ────────────────────────────────────────────────── */
+.domain-QUANT { color: #5B8DC7; }
+.domain-AUDIT { color: var(--gold); }
+.domain-RISK { color: var(--red); }
+.domain-TECH { color: var(--green); }
+.domain-BIZDEV { color: var(--amber); }
+.dot-QUANT { background: #5B8DC7; }
+.dot-AUDIT { background: var(--gold); }
+.dot-RISK { background: var(--red); }
+.dot-TECH { background: var(--green); }
+.dot-BIZDEV { background: var(--amber); }
+
+/* ── EMPTY STATE ──────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text3);
+}
+.empty-state .es-icon { font-size: 36px; margin-bottom: 12px; }
+.empty-state p { font-family: var(--font-m); font-size: 12px; line-height: 1.6; }
+
+/* ── TOAST ────────────────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: calc(var(--safe-bot) + 80px);
+  left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-family: var(--font-m);
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 1000;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── MODAL ────────────────────────────────────────────────────────── */
+#modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(7,11,22,0.85);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: none;
+  align-items: flex-end;
+}
+#modal-overlay.open { display: flex; }
+#modal-box {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  background: var(--bg2);
+  border-top: 1px solid var(--border2);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(var(--safe-bot) + 24px);
+  animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  max-height: 80dvh;
+  overflow-y: auto;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-title { font-family: var(--font-h); font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+
+/* ── WEEK SCORE GRID ──────────────────────────────────────────────── */
+.score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.score-item { text-align: center; }
+.score-label { font-family: var(--font-m); font-size: 9px; color: var(--text3); margin-bottom: 4px; }
+.score-value {
+  font-family: var(--font-h);
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ── RING PROGRESS BIG ────────────────────────────────────────────── */
+.big-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.ring-mini {
+  width: 64px; height: 64px;
+  flex-shrink: 0;
+}
+.ring-mini-bg { fill: none; stroke: var(--bg3); stroke-width: 6; }
+.ring-mini-fill { fill: none; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 163; transition: stroke-dashoffset 0.6s ease; }
+.ring-mini-text { font-family: var(--font-h); font-size: 14px; font-weight: 800; fill: var(--text); text-anchor: middle; dominant-baseline: middle; }
+.big-progress-info { flex: 1; }
+.big-progress-title { font-family: var(--font-h); font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.big-progress-sub { font-family: var(--font-m); font-size: 11px; color: var(--text3); }
+
+/* ── SCROLLBAR for webviews ───────────────────────────────────────── */
+.thin-scroll { scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.thin-scroll::-webkit-scrollbar { width: 3px; }
+.thin-scroll::-webkit-scrollbar-thumb { background: var(--border2); }
+
+/* ── NO-SELECT ────────────────────────────────────────────────────── */
+.no-select { user-select: none; -webkit-user-select: none; }
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div class="header-logo">
+      <div class="logo-icon">F<span style="color:rgba(7,11,22,0.6)">G</span></div>
+      <div>
+        <div class="logo-text">FinG</div>
+        <div class="logo-sub">Hyper-Analyst Forge</div>
+      </div>
+    </div>
+    <div class="header-date" id="headerDate"></div>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs">
+    <div class="tab active no-select" data-page="dashboard"><div class="tab-dot"></div>Dashboard</div>
+    <div class="tab no-select" data-page="timer"><div class="tab-dot"></div>Deep Work</div>
+    <div class="tab no-select" data-page="roadmap"><div class="tab-dot"></div>Roadmap</div>
+    <div class="tab no-select" data-page="certs"><div class="tab-dot"></div>Certs</div>
+    <div class="tab no-select" data-page="resources"><div class="tab-dot"></div>Resources</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="section-pad">
+
+        <!-- Overall progress banner -->
+        <div class="big-progress">
+          <svg class="ring-mini" viewBox="0 0 64 64">
+            <circle class="ring-mini-bg" cx="32" cy="32" r="26"/>
+            <circle class="ring-mini-fill" id="overallRing" cx="32" cy="32" r="26"
+              stroke="var(--gold)" stroke-dashoffset="163" transform="rotate(-90 32 32)"/>
+            <text class="ring-mini-text" x="32" y="32" id="overallPct">0%</text>
+          </svg>
+          <div class="big-progress-info">
+            <div class="big-progress-title">24-Month Journey</div>
+            <div class="big-progress-sub" id="journeyStatus">Day 1 of 730 · Quarter 1</div>
+          </div>
+        </div>
+
+        <!-- Stats grid -->
+        <div class="stats-grid">
+          <div class="stat-card gold-accent">
+            <div class="stat-label">THIS WEEK</div>
+            <div class="stat-value" id="weekHours">0.0</div>
+            <div class="stat-unit">deep work hrs</div>
+            <div class="stat-sub" id="weekTarget">Target: 25h</div>
+            <div class="accent-bar"></div>
+          </div>
+          <div class="stat-card blue-accent">
+            <div class="stat-label">TOTAL LOGGED</div>
+            <div class="stat-value" id="totalHours">0</div>
+            <div class="stat-unit">hours all-time</div>
+            <div class="accent-bar"></div>
+          </div>
+          <div class="stat-card green-accent">
+            <div class="stat-label">TASKS DONE</div>
+            <div class="stat-value" id="tasksDone">0</div>
+            <div class="stat-unit">of <span id="tasksTotal">0</span> total</div>
+            <div class="accent-bar"></div>
+          </div>
+          <div class="stat-card gold-accent">
+            <div class="stat-label">STREAK</div>
+            <div class="stat-value" id="streakDays">0</div>
+            <div class="stat-unit">day streak 🔥</div>
+            <div class="accent-bar"></div>
+          </div>
+        </div>
+
+        <!-- Weekly KPIs -->
+        <div class="section-title">Weekly KPIs</div>
+        <div class="card">
+          <div class="kpi-item">
+            <div class="kpi-header">
+              <span class="kpi-name">Deep Work Hours</span>
+              <span class="kpi-val" id="kpi-dw-val">0 / 25h</span>
+            </div>
+            <div class="kpi-bar-bg"><div class="kpi-bar gold" id="kpi-dw-bar" style="width:0%"></div></div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-header">
+              <span class="kpi-name">GitHub Commits</span>
+              <span class="kpi-val" id="kpi-gh-val">0 / 3</span>
+            </div>
+            <div class="kpi-bar-bg"><div class="kpi-bar green" id="kpi-gh-bar" style="width:0%"></div></div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-header">
+              <span class="kpi-name">Pages Read</span>
+              <span class="kpi-val" id="kpi-pg-val">0 / 350</span>
+            </div>
+            <div class="kpi-bar-bg"><div class="kpi-bar blue" id="kpi-pg-bar" style="width:0%"></div></div>
+          </div>
+          <div class="kpi-item">
+            <div class="kpi-header">
+              <span class="kpi-name">LinkedIn Posts</span>
+              <span class="kpi-val" id="kpi-li-val">0 / 1</span>
+            </div>
+            <div class="kpi-bar-bg"><div class="kpi-bar amber" id="kpi-li-bar" style="width:0%"></div></div>
+          </div>
+          <div class="kpi-item" style="margin-bottom:0">
+            <div class="kpi-header">
+              <span class="kpi-name">Anki Reviews</span>
+              <span class="kpi-val" id="kpi-an-val">0 / 210</span>
+            </div>
+            <div class="kpi-bar-bg"><div class="kpi-bar amber" id="kpi-an-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- Log KPI button -->
+        <button class="btn btn-primary" style="width:100%;margin-bottom:12px" onclick="openKPIModal()">+ Log This Week's KPIs</button>
+
+        <!-- Activity heatmap -->
+        <div class="section-title">Activity — Last 35 Days</div>
+        <div class="card">
+          <div class="heatmap-grid" id="heatmapGrid"></div>
+          <div class="heatmap-labels">
+            <div class="heatmap-lbl">M</div><div class="heatmap-lbl">T</div>
+            <div class="heatmap-lbl">W</div><div class="heatmap-lbl">T</div>
+            <div class="heatmap-lbl">F</div><div class="heatmap-lbl">S</div>
+            <div class="heatmap-lbl">S</div>
+          </div>
+        </div>
+
+        <!-- Domain breakdown -->
+        <div class="section-title">Domain Breakdown</div>
+        <div class="card" id="domainBreakdown"></div>
+
+      </div>
+    </div><!-- /dashboard -->
+
+    <!-- ═══ TIMER ═══ -->
+    <div class="page" id="page-timer">
+      <div class="section-pad">
+
+        <div class="timer-display">
+          <div class="timer-label" id="timerStatusLabel">SELECT DOMAIN & START</div>
+          <div class="timer-ring-wrap">
+            <svg class="timer-ring" viewBox="0 0 180 180">
+              <circle class="timer-ring-bg" cx="90" cy="90" r="80"/>
+              <circle class="timer-ring-prog" id="timerRing" cx="90" cy="90" r="80"/>
+            </svg>
+            <div class="timer-time" id="timerDisplay">90:00</div>
+          </div>
+          <div style="font-family:var(--font-m);font-size:11px;color:var(--text3);margin-bottom:16px">
+            One block = 90 minutes. No blocks under 90 min count.
+          </div>
+          <select class="timer-domain-select" id="timerDomain">
+            <option value="QUANT">[QUANT] Quantitative / Math</option>
+            <option value="AUDIT">[AUDIT] Audit & Conduct</option>
+            <option value="RISK">[RISK] Risk Modelling</option>
+            <option value="TECH">[TECH] Tech / Coding</option>
+            <option value="BIZDEV">[BIZ-DEV] Freelance / Business</option>
+          </select>
+          <div class="timer-controls">
+            <button class="btn btn-primary" id="timerStartBtn" onclick="timerToggle()">START</button>
+            <button class="btn btn-secondary" onclick="timerReset()">RESET</button>
+          </div>
+        </div>
+
+        <!-- Today's sessions -->
+        <div class="section-title">Today's Sessions</div>
+        <div class="card" id="todaySessions">
+          <div class="empty-state">
+            <div class="es-icon">⏱</div>
+            <p>No sessions logged today.<br/>Start your first 90-min block.</p>
+          </div>
+        </div>
+
+        <!-- Weekly totals by domain -->
+        <div class="section-title">This Week by Domain</div>
+        <div class="card" id="weekDomains"></div>
+
+      </div>
+    </div><!-- /timer -->
+
+    <!-- ═══ ROADMAP ═══ -->
+    <div class="page" id="page-roadmap">
+      <div class="section-pad">
+
+        <!-- Overall progress -->
+        <div class="card" style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <span style="font-family:var(--font-h);font-size:15px;font-weight:700">Overall Roadmap</span>
+            <span style="font-family:var(--font-m);font-size:13px;color:var(--gold)" id="overallRoadmapPct">0%</span>
+          </div>
+          <div class="kpi-bar-bg"><div class="kpi-bar gold" id="overallRoadmapBar" style="width:0%"></div></div>
+        </div>
+
+        <!-- Quarter cards -->
+        <div id="quarterList"></div>
+
+      </div>
+    </div><!-- /roadmap -->
+
+    <!-- ═══ CERTS ═══ -->
+    <div class="page" id="page-certs">
+      <div class="section-pad">
+        <div class="section-title">Certification Tracker</div>
+        <div id="certList"></div>
+      </div>
+    </div><!-- /certs -->
+
+    <!-- ═══ RESOURCES ═══ -->
+    <div class="page" id="page-resources">
+      <div class="section-pad">
+        <div class="resource-filters" id="resourceFilters"></div>
+        <div class="card" style="padding:0 16px" id="resourceList"></div>
+      </div>
+    </div><!-- /resources -->
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<!-- KPI MODAL -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal-box">
+    <div class="modal-title">Log Weekly KPIs</div>
+    <div class="input-row">
+      <div style="flex:1">
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--text3);margin-bottom:4px">GitHub Commits</div>
+        <input class="input" type="number" id="inp-commits" placeholder="0" min="0"/>
+      </div>
+      <div style="flex:1">
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--text3);margin-bottom:4px">Pages Read</div>
+        <input class="input" type="number" id="inp-pages" placeholder="0" min="0"/>
+      </div>
+    </div>
+    <div class="input-row">
+      <div style="flex:1">
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--text3);margin-bottom:4px">LinkedIn Posts</div>
+        <input class="input" type="number" id="inp-linkedin" placeholder="0" min="0"/>
+      </div>
+      <div style="flex:1">
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--text3);margin-bottom:4px">Anki Reviews</div>
+        <input class="input" type="number" id="inp-anki" placeholder="0" min="0"/>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="saveKPIs()">Save KPIs</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DB
+// ═══════════════════════════════════════════════════════════════════
+const DB_NAME = 'fing_db', DB_VER = 1;
+let db;
+
+function openDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('sessions'))
+        d.createObjectStore('sessions', { keyPath: 'id', autoIncrement: true });
+      if (!d.objectStoreNames.contains('kv'))
+        d.createObjectStore('kv', { keyPath: 'key' });
+    };
+    req.onsuccess = e => { db = e.target.result; res(db); };
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbPut(store, obj) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).put(obj);
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbGetAll(store) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+function dbGet(store, key) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).get(key);
+    req.onsuccess = () => res(req.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let state = {
+  startDate: null,       // ISO date string of Day 1
+  tasksDone: {},         // { "q1-task-0": true, ... }
+  certProgress: {},      // { "fmva": { pct: 40, domains: [true, false, ...] }, ... }
+  resourceDone: {},      // { "res-0": true, ... }
+  weekKPIs: {},          // { "2024-W01": { commits, pages, linkedin, anki, hours } }
+  heatmap: {},           // { "2024-01-15": hoursFloat }
+  streak: 0,
+  lastActiveDay: null,
+};
+
+async function loadState() {
+  const rec = await dbGet('kv', 'appState');
+  if (rec) state = { ...state, ...rec.value };
+  if (!state.startDate) {
+    state.startDate = new Date().toISOString().split('T')[0];
+    await saveState();
+  }
+}
+
+async function saveState() {
+  await dbPut('kv', { key: 'appState', value: state });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════════════════════
+const BLOCK_SECS = 90 * 60;
+let timerSecs = BLOCK_SECS;
+let timerRunning = false;
+let timerInterval = null;
+let timerSessionStart = null;
+
+function timerToggle() {
+  if (!timerRunning) {
+    timerRunning = true;
+    timerSessionStart = Date.now();
+    document.getElementById('timerStartBtn').textContent = 'PAUSE';
+    document.getElementById('timerRing').classList.add('running');
+    document.getElementById('timerStatusLabel').textContent = 'DEEP WORK IN PROGRESS';
+    timerInterval = setInterval(timerTick, 1000);
+  } else {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('timerStartBtn').textContent = 'RESUME';
+    document.getElementById('timerRing').classList.remove('running');
+    document.getElementById('timerStatusLabel').textContent = 'PAUSED';
+  }
+}
+
+function timerTick() {
+  if (timerSecs <= 0) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    completeSession();
+    return;
+  }
+  timerSecs--;
+  updateTimerDisplay();
+}
+
+function timerReset() {
+  if (timerRunning) { clearInterval(timerInterval); timerRunning = false; }
+  timerSecs = BLOCK_SECS;
+  document.getElementById('timerStartBtn').textContent = 'START';
+  document.getElementById('timerRing').classList.remove('running');
+  document.getElementById('timerStatusLabel').textContent = 'SELECT DOMAIN & START';
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSecs / 60);
+  const s = timerSecs % 60;
+  document.getElementById('timerDisplay').textContent =
+    String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  const prog = 1 - timerSecs / BLOCK_SECS;
+  const circumference = 502;
+  document.getElementById('timerRing').style.strokeDashoffset =
+    circumference * (1 - prog);
+}
+
+async function completeSession() {
+  const domain = document.getElementById('timerDomain').value;
+  const durationH = 1.5;
+  const now = new Date();
+  const dateKey = now.toISOString().split('T')[0];
+  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+  // Store session
+  await dbPut('sessions', {
+    domain,
+    durationH,
+    date: dateKey,
+    time: timeStr,
+    ts: now.getTime()
+  });
+
+  // Update heatmap
+  state.heatmap[dateKey] = (state.heatmap[dateKey] || 0) + durationH;
+
+  // Update streak
+  const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
+  const yKey = yesterday.toISOString().split('T')[0];
+  if (state.lastActiveDay === yKey || state.lastActiveDay === dateKey) {
+    if (state.lastActiveDay !== dateKey) state.streak = (state.streak || 0) + 1;
+  } else {
+    state.streak = 1;
+  }
+  state.lastActiveDay = dateKey;
+
+  // Update week KPIs
+  const wk = getWeekKey();
+  if (!state.weekKPIs[wk]) state.weekKPIs[wk] = { commits:0, pages:0, linkedin:0, anki:0, hours:0 };
+  state.weekKPIs[wk].hours = (state.weekKPIs[wk].hours || 0) + durationH;
+
+  await saveState();
+
+  timerSecs = BLOCK_SECS;
+  updateTimerDisplay();
+  document.getElementById('timerStartBtn').textContent = 'START';
+  document.getElementById('timerStatusLabel').textContent = '✓ SESSION COMPLETE — WELL DONE';
+  document.getElementById('timerRing').style.strokeDashoffset = 502;
+
+  showToast('90-min block logged: [' + domain + '] +1.5h');
+  renderTimerPage();
+  renderDashboard();
+}
+
+function getWeekKey() {
+  const now = new Date();
+  const jan1 = new Date(now.getFullYear(), 0, 1);
+  const week = Math.ceil(((now - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  return now.getFullYear() + '-W' + String(week).padStart(2, '0');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ROADMAP DATA
+// ═══════════════════════════════════════════════════════════════════
+const QUARTERS = [
+  {
+    id: 'q1', label: 'Q1', months: 'Months 1–3',
+    theme: 'Quantitative Foundations & The Analyst\'s Toolkit',
+    tasks: [
+      { text: 'Complete MIT OCW 18.06 Linear Algebra (Strang)', tag: 'book' },
+      { text: 'Read Blitzstein & Hwang: Introduction to Probability (Harvard)', tag: 'book' },
+      { text: 'Wooldridge Econometrics: Chapters 1–8', tag: 'book' },
+      { text: 'Python Pandas: Kaggle Learn full course', tag: 'tech' },
+      { text: 'SQL: Mode Analytics Tutorial complete', tag: 'tech' },
+      { text: 'Excel VBA: Automated reporting macros', tag: 'tech' },
+      { text: 'Git: First public repo with professional README', tag: 'tech' },
+      { text: 'Read Financial Shenanigans — Schilit', tag: 'book' },
+      { text: 'Read Basel III LCR (BIS.org full text)', tag: 'book' },
+      { text: 'FMVA: Excel Crash Course + Financial Analysis Fundamentals', tag: 'cert' },
+      { text: 'FMVA: Accounting Fundamentals module complete', tag: 'cert' },
+      { text: 'PROJECT: The Bank Autopsy — SVB balance sheet + ratio dashboard', tag: 'proj' },
+      { text: 'PROJECT: Analyst memo (3 pages, VP-grade)', tag: 'proj' },
+      { text: 'GitHub: Bank Autopsy repo live', tag: 'proj' },
+    ]
+  },
+  {
+    id: 'q2', label: 'Q2', months: 'Months 4–6',
+    theme: 'Risk Modelling & Regulatory Architecture',
+    tasks: [
+      { text: 'Time Series: Ruey Tsay Ch.1–5 complete', tag: 'book' },
+      { text: 'Read Value at Risk — Philippe Jorion', tag: 'book' },
+      { text: 'Read Hull: Options, Futures, Derivatives Ch.1–5 + 17–20', tag: 'book' },
+      { text: 'Read Credit Risk Measurement — Saunders & Cornett', tag: 'book' },
+      { text: 'Read Basel III full text (BIS.org)', tag: 'book' },
+      { text: 'Python: ARIMA + GARCH implementation in Statsmodels', tag: 'tech' },
+      { text: 'Python: Logistic regression credit model in Scikit-learn', tag: 'tech' },
+      { text: 'SQL Advanced: Window functions + CTEs mastered', tag: 'tech' },
+      { text: 'Power BI: Risk dashboard with DAX measures', tag: 'tech' },
+      { text: 'FMVA: Complete remaining 60% — exam in Month 6', tag: 'cert' },
+      { text: 'FRM Part 1: Enroll + Foundations of Risk Management section', tag: 'cert' },
+      { text: 'FRM Part 1: Quantitative Analysis section complete', tag: 'cert' },
+      { text: 'PROJECT: Monte Carlo Stress Engine (10,000 simulations, Cholesky)', tag: 'proj' },
+      { text: 'PROJECT: LCR breach probability + ES at 99% output', tag: 'proj' },
+      { text: 'PROJECT: Basel-style executive summary + GitHub push', tag: 'proj' },
+    ]
+  },
+  {
+    id: 'q3', label: 'Q3', months: 'Months 7–9',
+    theme: 'Audit Science & Conduct Frameworks',
+    tasks: [
+      { text: 'Read Sawyer\'s Internal Auditing (the definitive text)', tag: 'book' },
+      { text: 'IIA IPPF Standards: Full read + study notes', tag: 'book' },
+      { text: 'Read IT Auditing — Davis, Schiller, Wheeler', tag: 'book' },
+      { text: 'COBIT 2019: Download + read framework', tag: 'book' },
+      { text: 'FCA Handbook: SYSC + COND sourcebooks', tag: 'book' },
+      { text: 'Read The Conduct Risk Handbook — Jackman', tag: 'book' },
+      { text: 'Read Principles of Fraud Examination — Joseph Wells', tag: 'book' },
+      { text: 'Read Benford\'s Law — Mark Nigrini', tag: 'book' },
+      { text: 'Read FATF 40 Recommendations (full text)', tag: 'book' },
+      { text: 'Python: Benford\'s Law module + duplicate detection', tag: 'tech' },
+      { text: 'Power BI: Audit exception dashboard with drill-through', tag: 'tech' },
+      { text: 'Excel: Full audit workpaper template built', tag: 'tech' },
+      { text: 'CISA: Enroll + Domain 1 (IS Audit Process)', tag: 'cert' },
+      { text: 'CISA: Domain 2 (IT Governance) complete', tag: 'cert' },
+      { text: 'FRM Part 1: Financial Markets & Products section', tag: 'cert' },
+      { text: 'PROJECT: Conduct Autopsy — COSO ERM violation map', tag: 'proj' },
+      { text: 'PROJECT: Control Gap Register (15+ deficiencies, heat map)', tag: 'proj' },
+      { text: 'PROJECT: 10-step audit program written', tag: 'proj' },
+      { text: 'LinkedIn: First thought leadership article published (1,500 words)', tag: 'proj' },
+    ]
+  },
+  {
+    id: 'q4', label: 'Q4', months: 'Months 10–12',
+    theme: 'Advanced Modelling, Integration & First Positioning',
+    tasks: [
+      { text: 'Read Strategy: Game Theory — Joel Watson', tag: 'book' },
+      { text: 'Yale OCW: Game Theory (Ben Polak, YouTube)', tag: 'book' },
+      { text: 'Read Stochastic Calculus for Finance I — Shreve', tag: 'book' },
+      { text: 'MIT OCW 18.S096: Topics in Math with Finance Applications', tag: 'book' },
+      { text: 'Read Advances in Financial Machine Learning — Lopez de Prado', tag: 'book' },
+      { text: 'Read The Minto Pyramid Principle', tag: 'book' },
+      { text: 'Read Financial Modelling — Benninga', tag: 'book' },
+      { text: 'Python: XGBoost credit model + SHAP explainability', tag: 'tech' },
+      { text: 'Python: Flask API endpoint wrapping credit model', tag: 'tech' },
+      { text: 'Excel: Full 3-statement integrated financial model', tag: 'tech' },
+      { text: 'FRM Part 1: Valuation & Risk Models section + exam (Month 11–12)', tag: 'cert' },
+      { text: 'CISA: Domains 3–5 complete + exam registration', tag: 'cert' },
+      { text: 'PROJECT: XGBoost Credit Sentinel (SR 11-7 MRM memo)', tag: 'proj' },
+      { text: 'PROJECT: Flask API deployed locally', tag: 'proj' },
+      { text: 'Substack: Article 2 published (2,000 words on ML + credit)', tag: 'proj' },
+    ]
+  },
+  {
+    id: 'q5', label: 'Q5', months: 'Months 13–15',
+    theme: 'Systemic Auditing & Enterprise Risk Architecture',
+    tasks: [
+      { text: 'Read Implementing Enterprise Risk Management — James Lam', tag: 'book' },
+      { text: 'Read COSO 2017 ERM full framework', tag: 'book' },
+      { text: 'NIST Cybersecurity Framework 2.0 — full read', tag: 'book' },
+      { text: 'Read Operational Risk — Carol Alexander', tag: 'book' },
+      { text: 'TCFD Recommendations — full text read', tag: 'book' },
+      { text: 'BIS FRTB Minimum Capital Requirements — read', tag: 'book' },
+      { text: 'Python: NetworkX counterparty network graphs', tag: 'tech' },
+      { text: 'SQL: 5+ table joins, index design, query optimization', tag: 'tech' },
+      { text: 'CISA: Sit exam (Month 13–14) — PASS', tag: 'cert' },
+      { text: 'FRM Part 2: Enroll + Market Risk section (if pursuing)', tag: 'cert' },
+      { text: 'PROJECT: ERM Blueprint for a Fintech (full framework)', tag: 'proj' },
+      { text: 'PROJECT: 20+ KRI library with thresholds', tag: 'proj' },
+      { text: 'PROJECT: Board-level Risk Report format', tag: 'proj' },
+      { text: 'Substack + LinkedIn: ERM Playbook lead magnet published', tag: 'proj' },
+    ]
+  },
+  {
+    id: 'q6', label: 'Q6', months: 'Months 16–18',
+    theme: 'Forensic Depth & Advisory Sharpening',
+    tasks: [
+      { text: 'Read Forensic Accounting & Fraud Examination — Hopwood et al.', tag: 'book' },
+      { text: 'Read Financial Statement Analysis — Stephen Penman', tag: 'book' },
+      { text: 'Read Quality of Earnings — Thornton O\'Glove', tag: 'book' },
+      { text: 'SEC AAER database: Read 10 enforcement actions', tag: 'book' },
+      { text: 'FCA Final Notices: Read 5 recent notices', tag: 'book' },
+      { text: 'OFAC SDN guidance documents — read', tag: 'book' },
+      { text: 'Read The McKinsey Way — Ethan Rasiel', tag: 'book' },
+      { text: 'Read The Trusted Advisor — Maister et al.', tag: 'book' },
+      { text: 'Python: Transaction network graph for fraud mapping', tag: 'tech' },
+      { text: 'Excel: Full forensic analytics toolkit (stratify, gaps, Benford)', tag: 'tech' },
+      { text: 'CFE: Enroll + begin study (if forensic track)', tag: 'cert' },
+      { text: 'FRM Part 2: Credit Risk + Operational Risk sections', tag: 'cert' },
+      { text: 'PROJECT: Enforcement Action Reconstruction (Santander/FCA)', tag: 'proj' },
+      { text: 'PROJECT: 12-month remediation plan (s.166 format)', tag: 'proj' },
+      { text: 'Substack: Deep-dive article published (2,500 words)', tag: 'proj' },
+      { text: 'LinkedIn: 12+ articles published total by end of Q6', tag: 'proj' },
+    ]
+  },
+  {
+    id: 'q7', label: 'Q7', months: 'Months 19–21',
+    theme: 'Market Entry, Portfolio Construction & Rate Validation',
+    tasks: [
+      { text: 'ISDA Master Agreement — read full text', tag: 'book' },
+      { text: 'Read Liquidity Risk Measurement — Leonard Matz', tag: 'book' },
+      { text: 'SR 11-7 Model Risk Guidance — full read (Fed)', tag: 'book' },
+      { text: 'Read The Business of Expertise — David C. Baker', tag: 'book' },
+      { text: 'Read Never Split the Difference — Chris Voss', tag: 'book' },
+      { text: 'Python + Streamlit: Live risk dashboard built + deployed', tag: 'tech' },
+      { text: 'Docker basics: Containerize one Python risk tool', tag: 'tech' },
+      { text: 'Portfolio site: GitHub Pages or Notion live', tag: 'tech' },
+      { text: 'CFE: Financial Transactions + Fraud Prevention sections', tag: 'cert' },
+      { text: 'FRM Part 2: Liquidity & Treasury Risk + study complete', tag: 'cert' },
+      { text: 'LinkedIn: Profile optimised to Authority spec', tag: 'proj' },
+      { text: 'LinkedIn: 500+ targeted connections in risk/audit/compliance', tag: 'proj' },
+      { text: 'Toptal: Application submitted (Month 20)', tag: 'proj' },
+      { text: 'Catalant + Expert360 + GLG: All profiles live', tag: 'proj' },
+      { text: 'Direct outreach: 50 target companies identified', tag: 'proj' },
+      { text: 'PROJECT: Streamlit risk dashboard — MC stress + Benford module', tag: 'proj' },
+    ]
+  },
+  {
+    id: 'q8', label: 'Q8', months: 'Months 22–24',
+    theme: 'Rate Maximization, Niche Dominance & Client Acquisition',
+    tasks: [
+      { text: 'PRA/FCA SM&CR supervisory statements — read', tag: 'book' },
+      { text: 'NGFS Climate Scenarios Portal — read', tag: 'book' },
+      { text: 'Read The Independent Consultant\'s Bible — Alan Weiss', tag: 'book' },
+      { text: 'Read Presentation Zen — Garr Reynolds', tag: 'book' },
+      { text: 'Read Clean Code — Martin (Ch. 1–5)', tag: 'book' },
+      { text: 'Python: Unit tests (pytest) for all major tools', tag: 'tech' },
+      { text: 'Streamlit + PostgreSQL backend connected', tag: 'tech' },
+      { text: 'PowerPoint: BCG-style consulting deck template built', tag: 'tech' },
+      { text: 'CFE: Sit exam in Month 22', tag: 'cert' },
+      { text: 'FRM Part 2: Sit exam in Month 23', tag: 'cert' },
+      { text: 'AWS Cloud Practitioner: Study + sit (optional)', tag: 'cert' },
+      { text: 'FIRST PAYING CLIENT secured by Month 22', tag: 'proj' },
+      { text: 'Rate validation: $150+/hour confirmed on at least one platform', tag: 'proj' },
+      { text: 'Substack: 500+ subscribers reached', tag: 'proj' },
+      { text: 'GLG expert call completed (first one)', tag: 'proj' },
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// CERT DATA
+// ═══════════════════════════════════════════════════════════════════
+const CERTS = [
+  {
+    id: 'fmva', label: 'FMVA', name: 'Financial Modelling & Valuation Analyst',
+    body: 'Corporate Finance Institute (CFI)',
+    targetQ: 'Q2 — Month 6',
+    domains: ['Excel Crash Course','Financial Analysis Fundamentals','Accounting Fundamentals','Financial Modelling','Valuation','Scenario Analysis','Presentation Skills','Final Exam'],
+    logoClass: 'fmva', barClass: 'fmva', statusDefault: 'studying'
+  },
+  {
+    id: 'frm', label: 'FRM', name: 'Financial Risk Manager (Part 1)',
+    body: 'Global Association of Risk Professionals (GARP)',
+    targetQ: 'Q4 — Month 11–12',
+    domains: ['Foundations of Risk Management','Quantitative Analysis','Financial Markets & Products','Valuation & Risk Models','Mock Exams x3','Final Exam'],
+    logoClass: 'frm', barClass: 'frm', statusDefault: 'pending'
+  },
+  {
+    id: 'cisa', label: 'CISA', name: 'Certified Information Systems Auditor',
+    body: 'ISACA',
+    targetQ: 'Q5 — Month 13–14',
+    domains: ['Domain 1: IS Audit Process','Domain 2: IT Governance','Domain 3: IS Acquisition','Domain 4: IS Operations','Domain 5: Protection of Info Assets','Practice Exams','Final Exam'],
+    logoClass: 'cisa', barClass: 'cisa', statusDefault: 'pending'
+  },
+  {
+    id: 'cfe', label: 'CFE', name: 'Certified Fraud Examiner',
+    body: 'Association of Certified Fraud Examiners (ACFE)',
+    targetQ: 'Q8 — Month 22',
+    domains: ['Financial Transactions & Fraud','Fraud Prevention & Deterrence','Legal Elements of Fraud','Fraud Investigation','Practice Exams','Final Exam'],
+    logoClass: 'cfe', barClass: 'cfe', statusDefault: 'pending'
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// RESOURCES DATA
+// ═══════════════════════════════════════════════════════════════════
+const RESOURCES = [
+  // Books
+  { id: 'r0',  type: 'Book',    domain: 'Math',    title: 'Linear Algebra and Its Applications — Gilbert Strang',            q: 'Q1' },
+  { id: 'r1',  type: 'Book',    domain: 'Math',    title: 'Mathematics for Economists — Simon & Blume',                      q: 'Q1' },
+  { id: 'r2',  type: 'Book',    domain: 'Stats',   title: 'Introduction to Probability — Blitzstein & Hwang',                q: 'Q1' },
+  { id: 'r3',  type: 'Book',    domain: 'Econ',    title: 'Introductory Econometrics — Wooldridge',                          q: 'Q1' },
+  { id: 'r4',  type: 'Book',    domain: 'Acctg',   title: 'Financial Shenanigans — Howard Schilit',                          q: 'Q1' },
+  { id: 'r5',  type: 'Book',    domain: 'Python',  title: 'Python for Data Analysis — Wes McKinney',                        q: 'Q1' },
+  { id: 'r6',  type: 'Book',    domain: 'SQL',     title: 'Learning SQL — Alan Beaulieu',                                    q: 'Q1' },
+  { id: 'r7',  type: 'Book',    domain: 'Risk',    title: 'Analysis of Financial Time Series — Ruey Tsay',                  q: 'Q2' },
+  { id: 'r8',  type: 'Book',    domain: 'Risk',    title: 'Value at Risk — Philippe Jorion',                                 q: 'Q2' },
+  { id: 'r9',  type: 'Book',    domain: 'Risk',    title: 'Options, Futures, and Other Derivatives — John Hull',             q: 'Q2' },
+  { id: 'r10', type: 'Book',    domain: 'Risk',    title: 'Credit Risk Measurement — Saunders & Cornett',                   q: 'Q2' },
+  { id: 'r11', type: 'Book',    domain: 'Reg',     title: 'The Regulatory Aftermath of the Global Financial Crisis',         q: 'Q2' },
+  { id: 'r12', type: 'Book',    domain: 'Gov',     title: 'Corporate Governance — Monks & Minow',                           q: 'Q2' },
+  { id: 'r13', type: 'Book',    domain: 'Audit',   title: "Sawyer's Internal Auditing — Lawrence Sawyer",                   q: 'Q3' },
+  { id: 'r14', type: 'Book',    domain: 'IT Audit',title: 'IT Auditing — Davis, Schiller, Wheeler',                         q: 'Q3' },
+  { id: 'r15', type: 'Book',    domain: 'Conduct', title: 'The Conduct Risk Handbook — David Jackman',                      q: 'Q3' },
+  { id: 'r16', type: 'Book',    domain: 'Fraud',   title: 'Principles of Fraud Examination — Joseph Wells',                  q: 'Q3' },
+  { id: 'r17', type: 'Book',    domain: 'Fraud',   title: "Benford's Law — Mark Nigrini",                                    q: 'Q3' },
+  { id: 'r18', type: 'Book',    domain: 'AML',     title: 'Anti-Money Laundering in a Nutshell — Kevin Sullivan',            q: 'Q3' },
+  { id: 'r19', type: 'Book',    domain: 'Theory',  title: 'Strategy: An Introduction to Game Theory — Joel Watson',         q: 'Q4' },
+  { id: 'r20', type: 'Book',    domain: 'Quant',   title: 'Stochastic Calculus for Finance I & II — Steven Shreve',         q: 'Q4' },
+  { id: 'r21', type: 'Book',    domain: 'ML',      title: 'Advances in Financial Machine Learning — Lopez de Prado',        q: 'Q4' },
+  { id: 'r22', type: 'Book',    domain: 'Consult', title: 'The Minto Pyramid Principle — Barbara Minto',                    q: 'Q4' },
+  { id: 'r23', type: 'Book',    domain: 'FM',      title: 'Financial Modelling — Simon Benninga',                           q: 'Q4' },
+  { id: 'r24', type: 'Book',    domain: 'ERM',     title: 'Implementing Enterprise Risk Management — James Lam',            q: 'Q5' },
+  { id: 'r25', type: 'Book',    domain: 'Cyber',   title: "The Web Application Hacker's Handbook — Stuttard & Pinto",      q: 'Q5' },
+  { id: 'r26', type: 'Book',    domain: 'OpRisk',  title: 'Operational Risk — Carol Alexander',                             q: 'Q5' },
+  { id: 'r27', type: 'Book',    domain: 'Forensic',title: 'Forensic Accounting & Fraud Examination — Hopwood et al.',       q: 'Q6' },
+  { id: 'r28', type: 'Book',    domain: 'FSA',     title: 'Financial Statement Analysis — Stephen Penman',                  q: 'Q6' },
+  { id: 'r29', type: 'Book',    domain: 'FSA',     title: "Quality of Earnings — Thornton O'Glove",                         q: 'Q6' },
+  { id: 'r30', type: 'Book',    domain: 'Consult', title: 'The McKinsey Way — Ethan Rasiel',                                q: 'Q6' },
+  { id: 'r31', type: 'Book',    domain: 'Consult', title: 'The Trusted Advisor — Maister, Green, Galford',                  q: 'Q6' },
+  { id: 'r32', type: 'Book',    domain: 'LiqRisk', title: 'Liquidity Risk Measurement & Management — Leonard Matz',         q: 'Q7' },
+  { id: 'r33', type: 'Book',    domain: 'ModelRsk',title: 'Model Risk Management — Terri Duhon',                            q: 'Q7' },
+  { id: 'r34', type: 'Book',    domain: 'RegTech', title: 'The RegTech Book — Janos Barberis et al.',                       q: 'Q7' },
+  { id: 'r35', type: 'Book',    domain: 'BizDev',  title: 'The Business of Expertise — David C. Baker',                    q: 'Q7' },
+  { id: 'r36', type: 'Book',    domain: 'Negot',   title: 'Never Split the Difference — Chris Voss',                       q: 'Q7' },
+  { id: 'r37', type: 'Book',    domain: 'Consult', title: 'The Independent Consultant\'s Bible — Alan Weiss',               q: 'Q8' },
+  { id: 'r38', type: 'Book',    domain: 'Present', title: 'Presentation Zen — Garr Reynolds',                               q: 'Q8' },
+  // OCW
+  { id: 'r39', type: 'OCW',     domain: 'Math',    title: 'MIT OCW 18.06 Linear Algebra — Gilbert Strang (free)',           q: 'Q1' },
+  { id: 'r40', type: 'OCW',     domain: 'Stats',   title: 'Harvard Stat 110 — Joe Blitzstein (YouTube, free)',              q: 'Q1' },
+  { id: 'r41', type: 'OCW',     domain: 'Acctg',   title: 'Coursera: Financial Accounting — Wharton (free audit)',          q: 'Q1' },
+  { id: 'r42', type: 'OCW',     domain: 'ML',      title: 'fast.ai Practical Deep Learning (free) — tabular modules',      q: 'Q4' },
+  { id: 'r43', type: 'OCW',     domain: 'Theory',  title: 'Yale OCW: Game Theory — Ben Polak (YouTube, free)',             q: 'Q4' },
+  { id: 'r44', type: 'OCW',     domain: 'Quant',   title: 'MIT OCW 18.S096: Math with Finance Applications',               q: 'Q4' },
+  // Reg Docs
+  { id: 'r45', type: 'Reg Doc', domain: 'Reg',     title: 'Basel III: LCR full text (BIS.org, free)',                      q: 'Q1' },
+  { id: 'r46', type: 'Reg Doc', domain: 'Reg',     title: 'BCBS 239 Principles — BIS.org (free)',                          q: 'Q2' },
+  { id: 'r47', type: 'Reg Doc', domain: 'AML',     title: 'FATF 40 Recommendations (FATF-GAFI.org, free)',                 q: 'Q3' },
+  { id: 'r48', type: 'Reg Doc', domain: 'Reg',     title: 'SR 11-7: Guidance on Model Risk Management (Fed, free)',        q: 'Q7' },
+  { id: 'r49', type: 'Reg Doc', domain: 'ESG',     title: 'TCFD Recommendations full text (FSB-TCFD.org, free)',           q: 'Q5' },
+  { id: 'r50', type: 'Reg Doc', domain: 'Climate', title: 'NGFS Scenarios Portal (NGFS.net, free)',                        q: 'Q8' },
+  { id: 'r51', type: 'Reg Doc', domain: 'Conduct', title: 'FCA Handbook: SYSC + COND sourcebooks (FCA.org.uk, free)',      q: 'Q3' },
+  { id: 'r52', type: 'Reg Doc', domain: 'Reg',     title: 'BIS FRTB: Minimum Capital Requirements for Market Risk',        q: 'Q5' },
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER DASHBOARD
+// ═══════════════════════════════════════════════════════════════════
+async function renderDashboard() {
+  const sessions = await dbGetAll('sessions');
+  const wk = getWeekKey();
+  const kpis = state.weekKPIs[wk] || { commits:0, pages:0, linkedin:0, anki:0, hours:0 };
+
+  // Week hours from sessions
+  const now = new Date();
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay());
+  weekStart.setHours(0,0,0,0);
+  let weekH = 0;
+  sessions.forEach(s => { if (new Date(s.date) >= weekStart) weekH += s.durationH; });
+
+  // Total hours
+  const totalH = sessions.reduce((a, s) => a + s.durationH, 0);
+
+  // Tasks
+  const totalTasks = QUARTERS.reduce((a, q) => a + q.tasks.length, 0);
+  const doneTasks = Object.values(state.tasksDone).filter(Boolean).length;
+
+  // Update DOM
+  document.getElementById('weekHours').textContent = weekH.toFixed(1);
+  document.getElementById('totalHours').textContent = Math.round(totalH);
+  document.getElementById('tasksDone').textContent = doneTasks;
+  document.getElementById('tasksTotal').textContent = totalTasks;
+  document.getElementById('streakDays').textContent = state.streak || 0;
+
+  // KPI bars
+  const dwPct = Math.min(100, (weekH / 25) * 100);
+  document.getElementById('kpi-dw-val').textContent = weekH.toFixed(1) + ' / 25h';
+  document.getElementById('kpi-dw-bar').style.width = dwPct + '%';
+  document.getElementById('kpi-dw-bar').className = 'kpi-bar ' + (dwPct >= 100 ? 'over' : 'gold');
+
+  const ghPct = Math.min(100, ((kpis.commits || 0) / 3) * 100);
+  document.getElementById('kpi-gh-val').textContent = (kpis.commits || 0) + ' / 3';
+  document.getElementById('kpi-gh-bar').style.width = ghPct + '%';
+
+  const pgPct = Math.min(100, ((kpis.pages || 0) / 350) * 100);
+  document.getElementById('kpi-pg-val').textContent = (kpis.pages || 0) + ' / 350';
+  document.getElementById('kpi-pg-bar').style.width = pgPct + '%';
+
+  const liPct = Math.min(100, ((kpis.linkedin || 0) / 1) * 100);
+  document.getElementById('kpi-li-val').textContent = (kpis.linkedin || 0) + ' / 1';
+  document.getElementById('kpi-li-bar').style.width = liPct + '%';
+
+  const anPct = Math.min(100, ((kpis.anki || 0) / 210) * 100);
+  document.getElementById('kpi-an-val').textContent = (kpis.anki || 0) + ' / 210';
+  document.getElementById('kpi-an-bar').style.width = anPct + '%';
+
+  // Overall progress
+  const pct = Math.round((doneTasks / totalTasks) * 100);
+  document.getElementById('overallPct').textContent = pct + '%';
+  const r = 26; const circ = 2 * Math.PI * r;
+  document.getElementById('overallRing').style.strokeDashoffset = circ * (1 - pct / 100);
+
+  // Journey status
+  const start = new Date(state.startDate);
+  const dayNum = Math.max(1, Math.floor((now - start) / 86400000) + 1);
+  const qNum = Math.min(8, Math.ceil(dayNum / 91));
+  document.getElementById('journeyStatus').textContent =
+    'Day ' + dayNum + ' of 730 · Quarter ' + qNum;
+
+  // Heatmap
+  renderHeatmap(sessions);
+
+  // Domain breakdown
+  renderDomainBreakdown(sessions);
+}
+
+function renderHeatmap(sessions) {
+  const grid = document.getElementById('heatmapGrid');
+  grid.innerHTML = '';
+  const days = 35;
+  const now = new Date();
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    const h = state.heatmap[key] || 0;
+    const cls = h === 0 ? '' : h < 1.5 ? 'h1' : h < 3 ? 'h2' : h < 4.5 ? 'h3' : 'h4';
+    const el = document.createElement('div');
+    el.className = 'heatmap-day ' + cls;
+    if (h > 0) el.title = key + ': ' + h.toFixed(1) + 'h';
+    grid.appendChild(el);
+  }
+}
+
+function renderDomainBreakdown(sessions) {
+  const totals = { QUANT:0, AUDIT:0, RISK:0, TECH:0, BIZDEV:0 };
+  sessions.forEach(s => { if (totals[s.domain] !== undefined) totals[s.domain] += s.durationH; });
+  const total = Object.values(totals).reduce((a, b) => a + b, 0);
+  const labels = { QUANT:'Quantitative', AUDIT:'Audit & Conduct', RISK:'Risk Modelling', TECH:'Technology', BIZDEV:'Freelance/BizDev' };
+  const colors = { QUANT:'#5B8DC7', AUDIT:'#C9982A', RISK:'#E05252', TECH:'#2ECC8A', BIZDEV:'#F5A623' };
+  const el = document.getElementById('domainBreakdown');
+  if (total === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">📊</div><p>No sessions logged yet.<br/>Start a Deep Work block.</p></div>';
+    return;
+  }
+  el.innerHTML = '';
+  Object.entries(totals).forEach(([k, v]) => {
+    const pct = total > 0 ? (v / total * 100) : 0;
+    const row = document.createElement('div');
+    row.className = 'kpi-item';
+    row.innerHTML = `
+      <div class="kpi-header">
+        <span class="kpi-name" style="color:${colors[k]}">${labels[k]}</span>
+        <span class="kpi-val">${v.toFixed(1)}h</span>
+      </div>
+      <div class="kpi-bar-bg"><div class="kpi-bar" style="width:${pct}%;background:${colors[k]}"></div></div>`;
+    el.appendChild(row);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER TIMER PAGE
+// ═══════════════════════════════════════════════════════════════════
+async function renderTimerPage() {
+  const sessions = await dbGetAll('sessions');
+  const today = new Date().toISOString().split('T')[0];
+  const todaySess = sessions.filter(s => s.date === today);
+
+  const el = document.getElementById('todaySessions');
+  if (todaySess.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">⏱</div><p>No sessions logged today.<br/>Start your first 90-min block.</p></div>';
+  } else {
+    el.innerHTML = '';
+    const colors = { QUANT:'#5B8DC7', AUDIT:'#C9982A', RISK:'#E05252', TECH:'#2ECC8A', BIZDEV:'#F5A623' };
+    todaySess.forEach(s => {
+      const row = document.createElement('div');
+      row.className = 'log-item';
+      row.innerHTML = `
+        <div class="log-dot" style="background:${colors[s.domain]||'#888'}"></div>
+        <div class="log-domain">[${s.domain}]</div>
+        <div class="log-dur">+${s.durationH.toFixed(1)}h</div>
+        <div class="log-time">${s.time}</div>`;
+      el.appendChild(row);
+    });
+  }
+
+  // Week by domain
+  const now = new Date();
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay()); weekStart.setHours(0,0,0,0);
+  const wd = { QUANT:0, AUDIT:0, RISK:0, TECH:0, BIZDEV:0 };
+  sessions.filter(s => new Date(s.date) >= weekStart).forEach(s => { if (wd[s.domain] !== undefined) wd[s.domain] += s.durationH; });
+  const wdEl = document.getElementById('weekDomains');
+  const labels = { QUANT:'[QUANT]', AUDIT:'[AUDIT]', RISK:'[RISK]', TECH:'[TECH]', BIZDEV:'[BIZ-DEV]' };
+  const colors2 = { QUANT:'#5B8DC7', AUDIT:'#C9982A', RISK:'#E05252', TECH:'#2ECC8A', BIZDEV:'#F5A623' };
+  const maxH = Math.max(...Object.values(wd), 1);
+  wdEl.innerHTML = '';
+  Object.entries(wd).forEach(([k, v]) => {
+    const row = document.createElement('div');
+    row.className = 'kpi-item';
+    row.innerHTML = `
+      <div class="kpi-header">
+        <span class="kpi-name" style="color:${colors2[k]};font-family:var(--font-m);font-size:12px">${labels[k]}</span>
+        <span class="kpi-val">${v.toFixed(1)}h</span>
+      </div>
+      <div class="kpi-bar-bg"><div class="kpi-bar" style="width:${(v/maxH)*100}%;background:${colors2[k]}"></div></div>`;
+    wdEl.appendChild(row);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER ROADMAP
+// ═══════════════════════════════════════════════════════════════════
+function renderRoadmap() {
+  const list = document.getElementById('quarterList');
+  list.innerHTML = '';
+
+  let totalDone = 0, totalAll = 0;
+
+  QUARTERS.forEach(q => {
+    const tasks = q.tasks;
+    const done = tasks.filter((_, i) => state.tasksDone[q.id + '-' + i]).length;
+    totalDone += done; totalAll += tasks.length;
+    const pct = Math.round((done / tasks.length) * 100);
+
+    const now = new Date();
+    const start = new Date(state.startDate);
+    const dayNum = Math.floor((now - start) / 86400000);
+    const qIdx = parseInt(q.id.replace('q','')) - 1;
+    let badgeClass = 'future';
+    if (dayNum >= qIdx * 91 && dayNum < (qIdx + 1) * 91) badgeClass = 'active';
+    else if (dayNum >= (qIdx + 1) * 91) badgeClass = 'done';
+
+    const card = document.createElement('div');
+    card.className = 'quarter-card';
+    card.id = 'qcard-' + q.id;
+
+    // Header
+    const hdr = document.createElement('div');
+    hdr.className = 'quarter-header';
+    hdr.innerHTML = `
+      <div class="q-badge ${badgeClass}">${q.label}</div>
+      <div class="q-info">
+        <div class="q-title">${q.months}</div>
+        <div class="q-theme">${q.theme}</div>
+      </div>
+      <div class="q-progress-text" style="color:${pct===100?'var(--green)':'var(--gold)'}">${pct}%</div>
+      <div class="q-chevron">⌄</div>`;
+    hdr.onclick = () => {
+      card.classList.toggle('open');
+    };
+
+    // Progress bar
+    const pBar = document.createElement('div');
+    pBar.className = 'q-progress-bar';
+    pBar.innerHTML = `<div class="q-progress-fill" style="width:${pct}%"></div>`;
+
+    // Body
+    const body = document.createElement('div');
+    body.className = 'quarter-body';
+
+    // Group tasks by tag
+    const byTag = { cert: [], proj: [], tech: [], book: [] };
+    const tagLabels = { cert: 'Certifications', proj: 'Projects & Deliverables', tech: 'Tech Stack', book: 'Reading & Resources' };
+    tasks.forEach((t, i) => { byTag[t.tag].push({ ...t, idx: i }); });
+
+    Object.entries(byTag).forEach(([tag, items]) => {
+      if (items.length === 0) return;
+      const sec = document.createElement('div');
+      const tagClass = { cert:'tag-cert', proj:'tag-proj', tech:'tag-tech', book:'tag-book' }[tag];
+      sec.innerHTML = `<div class="task-section-title">${tagLabels[tag]}</div>`;
+      items.forEach(item => {
+        const key = q.id + '-' + item.idx;
+        const isDone = !!state.tasksDone[key];
+        const row = document.createElement('div');
+        row.className = 'task-item';
+        row.innerHTML = `
+          <input type="checkbox" class="task-cb" ${isDone ? 'checked' : ''} data-key="${key}"/>
+          <div class="task-text ${isDone ? 'done' : ''}">${item.text}</div>
+          <span class="task-tag ${tagClass}">${tag.toUpperCase()}</span>`;
+        const cb = row.querySelector('.task-cb');
+        cb.addEventListener('change', async () => {
+          state.tasksDone[key] = cb.checked;
+          row.querySelector('.task-text').className = 'task-text ' + (cb.checked ? 'done' : '');
+          await saveState();
+          updateQuarterProgress(q.id);
+          renderOverallRoadmap();
+          renderDashboard();
+          showToast(cb.checked ? '✓ Task marked complete' : 'Task unmarked');
+        });
+        sec.appendChild(row);
+      });
+      body.appendChild(sec);
+    });
+
+    card.appendChild(hdr);
+    card.appendChild(pBar);
+    card.appendChild(body);
+    list.appendChild(card);
+  });
+
+  renderOverallRoadmap();
+}
+
+function updateQuarterProgress(qid) {
+  const q = QUARTERS.find(x => x.id === qid);
+  if (!q) return;
+  const done = q.tasks.filter((_, i) => state.tasksDone[qid + '-' + i]).length;
+  const pct = Math.round((done / q.tasks.length) * 100);
+  const bar = document.querySelector('#qcard-' + qid + ' .q-progress-fill');
+  if (bar) bar.style.width = pct + '%';
+  const txt = document.querySelector('#qcard-' + qid + ' .q-progress-text');
+  if (txt) { txt.textContent = pct + '%'; txt.style.color = pct === 100 ? 'var(--green)' : 'var(--gold)'; }
+}
+
+function renderOverallRoadmap() {
+  const total = QUARTERS.reduce((a, q) => a + q.tasks.length, 0);
+  const done = Object.values(state.tasksDone).filter(Boolean).length;
+  const pct = Math.round((done / total) * 100);
+  const el = document.getElementById('overallRoadmapPct');
+  if (el) el.textContent = pct + '%';
+  const bar = document.getElementById('overallRoadmapBar');
+  if (bar) bar.style.width = pct + '%';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER CERTS
+// ═══════════════════════════════════════════════════════════════════
+function renderCerts() {
+  const list = document.getElementById('certList');
+  list.innerHTML = '';
+  CERTS.forEach(cert => {
+    const cp = state.certProgress[cert.id] || { pct: 0, domains: [] };
+    const doneDomains = cp.domains.filter(Boolean).length;
+    const totalDomains = cert.domains.length;
+    const pct = Math.round((doneDomains / totalDomains) * 100);
+    const statusKey = cert.id + '-status';
+    const status = state.certProgress[cert.id + '_status'] || cert.statusDefault;
+    const statusLabel = { studying:'Studying', scheduled:'Scheduled', passed:'Passed', pending:'Pending' }[status];
+    const statusClass = { studying:'status-studying', scheduled:'status-scheduled', passed:'status-passed', pending:'status-pending' }[status];
+
+    const card = document.createElement('div');
+    card.className = 'cert-card';
+    card.innerHTML = `
+      <div class="cert-header">
+        <div class="cert-logo ${cert.logoClass}">${cert.label}</div>
+        <div class="cert-info">
+          <div class="cert-name">${cert.name}</div>
+          <div class="cert-body">${cert.body}</div>
+          <div style="font-family:var(--font-m);font-size:10px;color:var(--text3);margin-top:2px">Target: ${cert.targetQ}</div>
+        </div>
+        <select class="cert-status ${statusClass}" style="border:none;background:transparent;cursor:pointer;outline:none;font-family:var(--font-m);font-size:10px" data-cert="${cert.id}">
+          <option value="pending" ${status==='pending'?'selected':''}>Pending</option>
+          <option value="studying" ${status==='studying'?'selected':''}>Studying</option>
+          <option value="scheduled" ${status==='scheduled'?'selected':''}>Scheduled</option>
+          <option value="passed" ${status==='passed'?'selected':''}>Passed ✓</option>
+        </select>
+      </div>
+      <div class="cert-progress-label"><span>Progress: ${doneDomains}/${totalDomains} domains</span><span>${pct}%</span></div>
+      <div class="cert-bar-bg"><div class="cert-bar-fill ${cert.barClass}" style="width:${pct}%"></div></div>
+      <div class="cert-domain-list" id="cert-domains-${cert.id}"></div>`;
+
+    const sel = card.querySelector('select');
+    sel.addEventListener('change', async () => {
+      state.certProgress[cert.id + '_status'] = sel.value;
+      sel.className = 'cert-status status-' + sel.value;
+      await saveState();
+    });
+
+    list.appendChild(card);
+
+    // Domain chips
+    const domainEl = document.getElementById('cert-domains-' + cert.id);
+    cert.domains.forEach((d, i) => {
+      const done = cp.domains[i] || false;
+      const chip = document.createElement('div');
+      chip.className = 'cert-domain-chip ' + (done ? 'done' : '');
+      chip.textContent = (done ? '✓ ' : '') + d;
+      chip.addEventListener('click', async () => {
+        if (!state.certProgress[cert.id]) state.certProgress[cert.id] = { pct:0, domains:[] };
+        state.certProgress[cert.id].domains[i] = !state.certProgress[cert.id].domains[i];
+        await saveState();
+        renderCerts();
+        showToast(state.certProgress[cert.id].domains[i] ? '✓ Domain complete' : 'Domain unmarked');
+      });
+      domainEl.appendChild(chip);
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER RESOURCES
+// ═══════════════════════════════════════════════════════════════════
+let activeResFilter = 'All';
+function renderResources() {
+  // Filters
+  const types = ['All', 'Book', 'OCW', 'Reg Doc'];
+  const filterEl = document.getElementById('resourceFilters');
+  filterEl.innerHTML = '';
+  types.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn ' + (activeResFilter === t ? 'active' : '');
+    btn.textContent = t;
+    btn.onclick = () => { activeResFilter = t; renderResources(); };
+    filterEl.appendChild(btn);
+  });
+
+  const filtered = RESOURCES.filter(r => activeResFilter === 'All' || r.type === activeResFilter);
+  const listEl = document.getElementById('resourceList');
+  listEl.innerHTML = '';
+
+  const typeMap = { 'Book': 'res-book', 'OCW': 'res-ocw', 'Cert': 'res-cert', 'Reg Doc': 'res-doc' };
+
+  filtered.forEach(r => {
+    const done = !!state.resourceDone[r.id];
+    const row = document.createElement('div');
+    row.className = 'resource-item';
+    row.innerHTML = `
+      <input type="checkbox" class="task-cb" style="margin-top:4px" ${done ? 'checked' : ''} data-res="${r.id}"/>
+      <div style="flex:1;min-width:0">
+        <div class="resource-title" style="${done ? 'text-decoration:line-through;color:var(--text3)' : ''}">${r.title}</div>
+        <div style="display:flex;gap:6px;align-items:center;margin-top:4px">
+          <span class="resource-type-badge ${typeMap[r.type]||'res-doc'}">${r.type}</span>
+          <span style="font-family:var(--font-m);font-size:10px;color:var(--text3)">${r.domain} · ${r.q}</span>
+        </div>
+      </div>`;
+    const cb = row.querySelector('.task-cb');
+    cb.addEventListener('change', async () => {
+      state.resourceDone[r.id] = cb.checked;
+      row.querySelector('.resource-title').style.cssText = cb.checked ? 'text-decoration:line-through;color:var(--text3)' : '';
+      await saveState();
+      showToast(cb.checked ? '✓ Resource marked complete' : 'Unmarked');
+    });
+    listEl.appendChild(row);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// KPI MODAL
+// ═══════════════════════════════════════════════════════════════════
+function openKPIModal() {
+  const wk = getWeekKey();
+  const kpis = state.weekKPIs[wk] || {};
+  document.getElementById('inp-commits').value = kpis.commits || '';
+  document.getElementById('inp-pages').value = kpis.pages || '';
+  document.getElementById('inp-linkedin').value = kpis.linkedin || '';
+  document.getElementById('inp-anki').value = kpis.anki || '';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('open');
+}
+
+async function saveKPIs() {
+  const wk = getWeekKey();
+  if (!state.weekKPIs[wk]) state.weekKPIs[wk] = { commits:0, pages:0, linkedin:0, anki:0, hours:0 };
+  state.weekKPIs[wk].commits = parseInt(document.getElementById('inp-commits').value) || 0;
+  state.weekKPIs[wk].pages   = parseInt(document.getElementById('inp-pages').value)   || 0;
+  state.weekKPIs[wk].linkedin= parseInt(document.getElementById('inp-linkedin').value) || 0;
+  state.weekKPIs[wk].anki    = parseInt(document.getElementById('inp-anki').value)     || 0;
+  await saveState();
+  document.getElementById('modal-overlay').classList.remove('open');
+  renderDashboard();
+  showToast('✓ Weekly KPIs saved');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════════════
+let currentPage = 'dashboard';
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const page = tab.dataset.page;
+    if (page === currentPage) return;
+    currentPage = page;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('content').scrollTop = 0;
+    if (page === 'timer') renderTimerPage();
+    if (page === 'roadmap') renderRoadmap();
+    if (page === 'certs') renderCerts();
+    if (page === 'resources') renderResources();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// HEADER DATE
+// ═══════════════════════════════════════════════════════════════════
+function updateHeaderDate() {
+  const now = new Date();
+  document.getElementById('headerDate').innerHTML =
+    now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) +
+    '<br/>' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+setInterval(updateHeaderDate, 60000);
+updateHeaderDate();
+
+// ═══════════════════════════════════════════════════════════════════
+// SERVICE WORKER
+// ═══════════════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════════
+(async () => {
+  await openDB();
+  await loadState();
+  updateTimerDisplay();
+  await renderDashboard();
+})();
+</script>
+</body>
+</html>
