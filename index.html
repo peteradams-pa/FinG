@@ -1811,7 +1811,7 @@ select.field {
   overflow: hidden;
   box-shadow: var(--elev-3);
 }
-#pdf-canvas { display: block; width: 100%; }
+#pdf-canvas { display: block; image-rendering: auto; }
 .pdf-nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 16px calc(var(--sab) + 12px);
@@ -1930,6 +1930,250 @@ select.field {
 /* Scrollbar */
 .thin-scroll::-webkit-scrollbar { width: 4px; }
 .thin-scroll::-webkit-scrollbar-thumb { background: var(--md-outline-var); border-radius: 2px; }
+
+/* ═══════════════════════════════════════════════
+   CUSTOM MD3 SELECT / PICKER
+   Replaces all native <select> elements
+═══════════════════════════════════════════════ */
+.md-select-wrap {
+  position: relative;
+  width: 100%;
+}
+.md-select-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--md-surface-2);
+  border: 1px solid var(--md-outline-var);
+  border-radius: var(--shape-xs) var(--shape-xs) 0 0;
+  border-bottom: 2px solid var(--md-outline);
+  color: var(--md-on-surface);
+  font-family: var(--ff-body);
+  font-size: var(--ts-body-l);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--dur-short4) var(--motion-standard),
+              background var(--dur-short4) var(--motion-standard);
+  min-height: 48px;
+}
+.md-select-btn:focus,
+.md-select-btn.open {
+  border-bottom-color: var(--md-primary);
+  background: var(--md-surface-3);
+  outline: none;
+}
+.md-select-btn-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--ff-body);
+  font-size: var(--ts-body-l);
+  color: var(--md-on-surface);
+}
+.md-select-btn-text.placeholder { color: var(--md-outline); }
+.md-select-arrow {
+  font-size: 18px;
+  color: var(--md-outline);
+  flex-shrink: 0;
+  transition: transform var(--dur-med1) var(--motion-standard);
+  line-height: 1;
+}
+.md-select-btn.open .md-select-arrow { transform: rotate(180deg); }
+
+/* Picker bottom sheet overlay */
+.picker-scrim {
+  position: fixed; inset: 0;
+  background: var(--md-scrim);
+  z-index: 1200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.picker-scrim.open { display: flex; animation: scrimFadeIn 200ms var(--motion-standard); }
+@keyframes scrimFadeIn { from { opacity:0; } to { opacity:1; } }
+
+.picker-sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 70dvh;
+  background: var(--md-surface-2);
+  border-radius: 28px 28px 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: pickerUp var(--dur-med3) var(--motion-decelerate);
+  box-shadow: var(--elev-5);
+  overflow: hidden;
+  padding-bottom: var(--sab);
+}
+@keyframes pickerUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+
+.picker-handle {
+  width: 32px; height: 4px;
+  border-radius: 2px;
+  background: var(--md-outline-var);
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 8px;
+  flex-shrink: 0;
+}
+.picker-title {
+  font-family: var(--ff-head);
+  font-size: var(--ts-title-l);
+  font-weight: 500;
+  color: var(--md-on-surface);
+}
+.picker-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--shape-full);
+  border: 1px solid var(--md-outline-var);
+  background: var(--md-surface-3);
+  color: var(--md-primary);
+  font-family: var(--ff-label);
+  font-size: var(--ts-label-l);
+  font-weight: var(--tw-label-l);
+  cursor: pointer;
+  transition: background var(--dur-short4) var(--motion-standard);
+}
+.picker-add-btn:active { background: var(--md-primary-cont); }
+
+.picker-search-wrap {
+  padding: 0 16px 8px;
+  flex-shrink: 0;
+}
+.picker-search {
+  width: 100%;
+  background: var(--md-surface-3);
+  border: none;
+  border-radius: var(--shape-full);
+  padding: 10px 16px;
+  font-family: var(--ff-body);
+  font-size: var(--ts-body-m);
+  color: var(--md-on-surface);
+  outline: none;
+}
+.picker-search::placeholder { color: var(--md-outline); }
+
+.picker-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.picker-list::-webkit-scrollbar { display: none; }
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background var(--dur-short3) var(--motion-standard);
+  border-bottom: 1px solid var(--md-outline-var);
+  position: relative;
+}
+.picker-item:last-child { border-bottom: none; }
+.picker-item:active { background: var(--md-surface-3); }
+.picker-item.selected {
+  background: var(--md-primary-cont);
+}
+.picker-item-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--shape-m);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: var(--md-surface-variant);
+}
+.picker-item.selected .picker-item-icon {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+}
+.picker-item-text { flex: 1; min-width: 0; }
+.picker-item-label {
+  font-family: var(--ff-title);
+  font-size: var(--ts-title-s);
+  font-weight: var(--tw-title-s);
+  color: var(--md-on-surface);
+}
+.picker-item.selected .picker-item-label { color: var(--md-on-primary-cont); font-weight: 600; }
+.picker-item-sub {
+  font-family: var(--ff-body);
+  font-size: var(--ts-body-s);
+  color: var(--md-on-surface-var);
+  margin-top: 1px;
+}
+.picker-check {
+  color: var(--md-primary);
+  font-size: 20px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--dur-short3);
+}
+.picker-item.selected .picker-check { opacity: 1; }
+.picker-item-del {
+  width: 32px; height: 32px;
+  border-radius: var(--shape-full);
+  border: none;
+  background: transparent;
+  color: var(--md-outline);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-short3);
+  flex-shrink: 0;
+}
+.picker-item-del:active { background: var(--md-error-cont); color: var(--md-error); }
+
+/* Add new option inline input at bottom of picker */
+.picker-add-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 14px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--md-outline-var);
+  background: var(--md-surface-2);
+}
+.picker-add-input {
+  flex: 1;
+  background: var(--md-surface-3);
+  border: 1px solid var(--md-outline-var);
+  border-radius: var(--shape-full);
+  padding: 10px 16px;
+  font-family: var(--ff-body);
+  font-size: var(--ts-body-m);
+  color: var(--md-on-surface);
+  outline: none;
+  transition: border-color var(--dur-short4);
+}
+.picker-add-input:focus { border-color: var(--md-primary); }
+.picker-add-input::placeholder { color: var(--md-outline); }
+.picker-add-submit {
+  width: 40px; height: 40px;
+  border-radius: var(--shape-full);
+  border: none;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: opacity var(--dur-short3);
+}
+.picker-add-submit:active { opacity: 0.85; }
+
 </style>
 </head>
 <body>
@@ -2086,13 +2330,12 @@ select.field {
   <div style="padding:0 16px">
     <div class="field-wrap">
       <label class="field-label">Domain</label>
-      <select class="field" id="tdom" style="border-radius:var(--shape-xs)">
-        <option value="QUANT">[QUANT] Quantitative / Math</option>
-        <option value="AUDIT">[AUDIT] Audit &amp; Conduct</option>
-        <option value="RISK">[RISK]  Risk Modelling</option>
-        <option value="TECH">[TECH]  Technology / Coding</option>
-        <option value="BIZDEV">[BIZ-DEV] Freelance / Business</option>
-      </select>
+      <div id="tdom" class="md-select-wrap" style="cursor:pointer" onclick="openPicker('tdom')">
+        <div class="md-select-btn" id="picker-btn-tdom">
+          <span class="md-select-btn-text" id="picker-lbl-tdom">📐 Quantitative / Math</span>
+          <span class="md-select-arrow">⌄</span>
+        </div>
+      </div>
     </div>
     <div class="field-wrap">
       <label class="field-label">Session note (optional)</label>
@@ -2107,10 +2350,12 @@ select.field {
       <div style="display:flex;gap:10px;margin-bottom:10px">
         <div style="flex:1">
           <label class="field-label">Domain</label>
-          <select class="field" id="manDom">
-            <option value="QUANT">[QUANT]</option><option value="AUDIT">[AUDIT]</option>
-            <option value="RISK">[RISK]</option><option value="TECH">[TECH]</option><option value="BIZDEV">[BIZ-DEV]</option>
-          </select>
+          <div id="manDom" class="md-select-wrap" onclick="openPicker('manDom')">
+            <div class="md-select-btn" id="picker-btn-manDom">
+              <span class="md-select-btn-text" id="picker-lbl-manDom">📐 Quantitative / Math</span>
+              <span class="md-select-arrow">⌄</span>
+            </div>
+          </div>
         </div>
         <div style="width:90px">
           <label class="field-label">Hours</label>
@@ -3468,11 +3713,19 @@ async function renderPDFPage(pageNum){
   if(!pdfDoc)return;
   pageNum=Math.max(1,Math.min(pdfTotPages,pageNum)); pdfCurPage=pageNum;
   const page=await pdfDoc.getPage(pageNum);
+  const dpr=window.devicePixelRatio||2;
   const containerW=Math.min(480,window.innerWidth)-24;
-  const viewport=page.getViewport({scale:containerW/page.getViewport({scale:1}).width});
+  const baseScale=containerW/page.getViewport({scale:1}).width;
+  const viewport=page.getViewport({scale:baseScale*dpr});
   const canvas=_gei('pdf-canvas');
-  canvas.width=viewport.width; canvas.height=viewport.height;
+  // Physical pixel size
+  canvas.width=viewport.width;
+  canvas.height=viewport.height;
+  // CSS display size = physical/dpr so it looks crisp on HiDPI
+  canvas.style.width=Math.round(viewport.width/dpr)+'px';
+  canvas.style.height=Math.round(viewport.height/dpr)+'px';
   const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   if(pdfRenderTask)pdfRenderTask.cancel();
   pdfRenderTask=page.render({canvasContext:ctx,viewport});
   await pdfRenderTask.promise;
@@ -3646,7 +3899,357 @@ if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch
     let wkH=0; sessions.forEach(s=>{if(new Date(s.date)>=ws)wkH+=s.durationH});
     checkAlertDot(wkH,kpis);
   }, 5*60*1000);
+  // Init custom pickers after DOM is ready
+  setTimeout(initDomainPickers, 100);
 })();
+
+/* ═══════════════════════════════════════════════
+   MD3 CUSTOM PICKER ENGINE
+   Replaces all native <select> with a beautiful
+   bottom-sheet picker with add-item capability
+═══════════════════════════════════════════════ */
+
+// Picker registry: id → { options:[{value,label,icon,sub,deletable}], value, onChange, label, allowAdd, addPlaceholder }
+const PICKER_REG = {};
+
+// Domain options (user-extensible)
+const domainOptions = () => (S.customDomains||[]).concat([]);
+const DOMAIN_DEFAULTS = [
+  {value:'QUANT',  label:'Quantitative / Math',   icon:'📐', sub:'Statistics, modelling, calculus'},
+  {value:'AUDIT',  label:'Audit & Conduct',        icon:'🔍', sub:'IIA, CISA, conduct frameworks'},
+  {value:'RISK',   label:'Risk Modelling',         icon:'📊', sub:'VaR, credit, market, ERM'},
+  {value:'TECH',   label:'Technology / Coding',    icon:'💻', sub:'Python, SQL, Streamlit, Docker'},
+  {value:'BIZDEV', label:'Freelance / Business',   icon:'💼', sub:'Toptal, proposals, positioning'},
+];
+
+// Task category options
+const TASK_CAT_OPTIONS = [
+  {value:'book', label:'Reading / Resource', icon:'📖', sub:'Books, papers, regulatory docs'},
+  {value:'tech', label:'Tech / Coding',      icon:'💻', sub:'Tools and technical builds'},
+  {value:'cert', label:'Certification',      icon:'🏆', sub:'Exams and study modules'},
+  {value:'proj', label:'Project / Deliverable',icon:'🚀',sub:'Practical outputs and outputs'},
+];
+
+// Cert status options
+const CERT_STATUS_OPTIONS = [
+  {value:'pending',   label:'Pending',     icon:'⭕', sub:'Not started yet'},
+  {value:'studying',  label:'Studying',    icon:'📚', sub:'Currently in progress'},
+  {value:'scheduled', label:'Scheduled',   icon:'📅', sub:'Exam booked'},
+  {value:'passed',    label:'✓ Passed',    icon:'✅', sub:'Completed successfully'},
+];
+
+// Build a custom picker trigger button (replaces <select>)
+function buildPicker(id, opts) {
+  // opts: { options, value, onChange, label, allowAdd, addPlaceholder, icon }
+  PICKER_REG[id] = {
+    options: [...opts.options],
+    value: opts.value || (opts.options[0] && opts.options[0].value) || '',
+    onChange: opts.onChange || (()=>{}),
+    label: opts.label || 'Select',
+    allowAdd: !!opts.allowAdd,
+    addPlaceholder: opts.addPlaceholder || 'Add option…',
+    addCallback: opts.addCallback || null,
+  };
+  const wrap = document.createElement('div');
+  wrap.className = 'md-select-wrap';
+  wrap.id = 'picker-wrap-'+id;
+  const selected = PICKER_REG[id].options.find(o=>o.value===PICKER_REG[id].value) || PICKER_REG[id].options[0];
+  wrap.innerHTML = `
+    <button class="md-select-btn" id="picker-btn-${id}" type="button" onclick="openPicker('${id}')">
+      <span class="md-select-btn-text" id="picker-lbl-${id}">${selected ? (selected.icon?' '+selected.icon+' '+selected.label : selected.label) : opts.label}</span>
+      <span class="md-select-arrow">⌄</span>
+    </button>`;
+  return wrap;
+}
+
+function pickerGetValue(id) {
+  return PICKER_REG[id] ? PICKER_REG[id].value : '';
+}
+function pickerSetValue(id, val) {
+  if (!PICKER_REG[id]) return;
+  PICKER_REG[id].value = val;
+  const opt = PICKER_REG[id].options.find(o=>o.value===val);
+  const lbl = document.getElementById('picker-lbl-'+id);
+  if (lbl && opt) lbl.textContent = (opt.icon ? opt.icon+' '+opt.label : opt.label);
+}
+
+let _activePicker = null;
+function openPicker(id) {
+  const reg = PICKER_REG[id]; if(!reg) return;
+  _activePicker = id;
+  const btn = document.getElementById('picker-btn-'+id);
+  if(btn) btn.classList.add('open');
+
+  // Build scrim
+  const scrim = document.createElement('div');
+  scrim.className = 'picker-scrim open';
+  scrim.id = 'picker-scrim-active';
+  scrim.onclick = (e) => { if(e.target===scrim) closePicker(); };
+
+  const canSearch = reg.options.length > 5;
+
+  scrim.innerHTML = `
+    <div class="picker-sheet">
+      <div class="picker-handle"></div>
+      <div class="picker-header">
+        <div class="picker-title">${reg.label}</div>
+        ${reg.allowAdd ? '<button class="picker-add-btn" onclick="_pickerFocusAdd()">＋ Add New</button>' : ''}
+      </div>
+      ${canSearch ? '<div class="picker-search-wrap"><input class="picker-search" id="picker-search-inp" placeholder="Search…" oninput="_pickerSearch(this.value)"/></div>' : ''}
+      <div class="picker-list" id="picker-list-inner"></div>
+      ${reg.allowAdd ? `<div class="picker-add-row" id="picker-add-row" style="display:none">
+        <input class="picker-add-input" id="picker-add-inp" placeholder="${reg.addPlaceholder}" onkeydown="if(event.key==='Enter')_pickerSubmitAdd()"/>
+        <button class="picker-add-submit" onclick="_pickerSubmitAdd()">✓</button>
+      </div>` : ''}
+    </div>`;
+  document.body.appendChild(scrim);
+  _pickerRenderList(reg.options);
+
+  // Focus search
+  if(canSearch) setTimeout(()=>{const s=document.getElementById('picker-search-inp');if(s)s.focus()},100);
+}
+
+function _pickerRenderList(opts) {
+  const reg = PICKER_REG[_activePicker]; if(!reg)return;
+  const el = document.getElementById('picker-list-inner'); if(!el)return;
+  el.innerHTML = '';
+  if(!opts.length) {
+    el.innerHTML = '<div style="text-align:center;padding:32px 24px;color:var(--md-outline);font-family:var(--ff-body);font-size:14px">No options found</div>';
+    return;
+  }
+  opts.forEach(opt => {
+    const isSelected = opt.value === reg.value;
+    const row = document.createElement('div');
+    row.className = 'picker-item' + (isSelected?' selected':'');
+    row.innerHTML = `
+      ${opt.icon ? `<div class="picker-item-icon">${opt.icon}</div>` : ''}
+      <div class="picker-item-text">
+        <div class="picker-item-label">${opt.label}</div>
+        ${opt.sub ? `<div class="picker-item-sub">${opt.sub}</div>` : ''}
+      </div>
+      <span class="picker-check">✓</span>
+      ${opt.deletable ? `<button class="picker-item-del" onclick="event.stopPropagation();_pickerDeleteOpt('${opt.value}')">✕</button>` : ''}`;
+    row.onclick = () => _pickerSelect(opt.value);
+    el.appendChild(row);
+  });
+}
+
+function _pickerSearch(q) {
+  const reg = PICKER_REG[_activePicker]; if(!reg)return;
+  const filtered = q ? reg.options.filter(o=>
+    o.label.toLowerCase().includes(q.toLowerCase()) ||
+    (o.sub&&o.sub.toLowerCase().includes(q.toLowerCase()))
+  ) : reg.options;
+  _pickerRenderList(filtered);
+}
+
+function _pickerSelect(val) {
+  const reg = PICKER_REG[_activePicker]; if(!reg)return;
+  reg.value = val;
+  const opt = reg.options.find(o=>o.value===val);
+  const lbl = document.getElementById('picker-lbl-'+_activePicker);
+  if(lbl && opt) lbl.textContent = (opt.icon ? opt.icon+' '+opt.label : opt.label);
+  reg.onChange(val, opt);
+  closePicker();
+}
+
+function _pickerFocusAdd() {
+  const row = document.getElementById('picker-add-row');
+  if(row){ row.style.display='flex'; setTimeout(()=>{const i=document.getElementById('picker-add-inp');if(i)i.focus()},50); }
+}
+
+async function _pickerSubmitAdd() {
+  const reg = PICKER_REG[_activePicker]; if(!reg||!reg.allowAdd)return;
+  const inp = document.getElementById('picker-add-inp'); if(!inp)return;
+  const val = inp.value.trim(); if(!val){showSnackbar('Enter a value');return}
+  const newOpt = { value: 'custom_'+Date.now(), label: val, icon: '⭐', deletable: true };
+  reg.options.push(newOpt);
+  if(reg.addCallback) await reg.addCallback(newOpt);
+  inp.value = '';
+  const row = document.getElementById('picker-add-row');
+  if(row) row.style.display='none';
+  _pickerRenderList(reg.options);
+  _pickerSelect(newOpt.value);
+}
+
+async function _pickerDeleteOpt(val) {
+  const reg = PICKER_REG[_activePicker]; if(!reg)return;
+  reg.options = reg.options.filter(o=>o.value!==val);
+  if(reg.value===val && reg.options.length) _pickerSelect(reg.options[0].value);
+  if(reg.addCallback) await reg.addCallback(null, val); // signal deletion
+  _pickerRenderList(reg.options);
+}
+
+function closePicker() {
+  const scrim = document.getElementById('picker-scrim-active');
+  if(scrim) scrim.remove();
+  const btn = _activePicker ? document.getElementById('picker-btn-'+_activePicker) : null;
+  if(btn) btn.classList.remove('open');
+  _activePicker = null;
+}
+
+/* ── Domain picker initialisation ────────────────── */
+function initDomainPickers() {
+  // Load any saved custom domains from state
+  if(!S.customDomains) S.customDomains = [];
+  const allDomOpts = [
+    ...DOMAIN_DEFAULTS,
+    ...S.customDomains.map(d=>({...d, deletable:true})),
+  ];
+
+  // Timer domain picker
+  const tdWrap = document.getElementById('picker-wrap-tdom');
+  if (!tdWrap) {
+    const oldSel = document.getElementById('tdom');
+    if (oldSel) {
+      const wrap = buildPicker('tdom', {
+        options: allDomOpts,
+        value: 'QUANT',
+        label: 'Domain',
+        allowAdd: true,
+        addPlaceholder: 'New domain name…',
+        addCallback: async (newOpt, deletedVal) => {
+          if (deletedVal) {
+            S.customDomains = (S.customDomains||[]).filter(d=>d.value!==deletedVal);
+          } else if (newOpt) {
+            S.customDomains = S.customDomains||[];
+            S.customDomains.push({value:newOpt.value,label:newOpt.label,icon:newOpt.icon,deletable:true});
+          }
+          await saveS();
+          // Sync manDom picker too
+          if(PICKER_REG['manDom']) {
+            PICKER_REG['manDom'].options = [
+              ...DOMAIN_DEFAULTS,
+              ...(S.customDomains||[]).map(d=>({...d,deletable:true})),
+            ];
+          }
+        },
+      });
+      oldSel.parentNode.replaceChild(wrap, oldSel);
+    }
+  }
+
+  // Manual log domain picker
+  const mdWrap = document.getElementById('picker-wrap-manDom');
+  if (!mdWrap) {
+    const oldSel = document.getElementById('manDom');
+    if (oldSel) {
+      const wrap = buildPicker('manDom', {
+        options: allDomOpts,
+        value: 'QUANT',
+        label: 'Domain',
+        allowAdd: false, // synced from tdom
+      });
+      oldSel.parentNode.replaceChild(wrap, oldSel);
+    }
+  }
+}
+
+/* Override tdom/manDom reads to use picker values */
+const _orig_tdom_get = () => pickerGetValue('tdom') || 'QUANT';
+const _orig_manDom_get = () => pickerGetValue('manDom') || 'QUANT';
+
+// Patch completeSession and saveManual to use picker values
+const _orig_completeSession = completeSession;
+completeSession = async function() {
+  // Temporarily set picker values into named fields for the original function
+  const fakeTdom = { value: pickerGetValue('tdom')||'QUANT' };
+  const realTdom = document.getElementById('tdom');
+  // The original function calls _gei('tdom').value — we need to intercept
+  // We do this by patching ID_MAP temporarily
+  ID_MAP['tdom'] = '_tdom_proxy';
+  window._tdom_proxy = fakeTdom;
+  await _orig_completeSession();
+  delete ID_MAP['tdom'];
+  delete window._tdom_proxy;
+}
+
+const _orig_saveManual = saveManual;
+saveManual = async function() {
+  const fakeManDom = { value: pickerGetValue('manDom')||'QUANT' };
+  ID_MAP['manDom'] = '_manDom_proxy';
+  window._manDom_proxy = fakeManDom;
+  await _orig_saveManual();
+  delete ID_MAP['manDom'];
+  delete window._manDom_proxy;
+}
+
+/* ── Task category picker (used in add-task modal) ─ */
+function buildTaskCatPicker(containerId) {
+  const existing = document.getElementById('picker-wrap-ctTag');
+  if(existing) existing.remove();
+  const wrap = buildPicker('ctTag', {
+    options: TASK_CAT_OPTIONS,
+    value: 'book',
+    label: 'Category',
+    allowAdd: false,
+  });
+  const container = document.getElementById(containerId);
+  if(container) container.appendChild(wrap);
+}
+
+/* ── Cert status pickers (injected per cert card) ── */
+function replaceCertStatusSelects() {
+  document.querySelectorAll('select.cert-status-sel').forEach(sel => {
+    const certId = sel.dataset.cert;
+    if(!certId || document.getElementById('picker-wrap-cst-'+certId)) return;
+    const currentStatus = S.certProgress[certId+'_status']||'pending';
+    const wrap = buildPicker('cst-'+certId, {
+      options: CERT_STATUS_OPTIONS,
+      value: currentStatus,
+      label: 'Status',
+      allowAdd: false,
+      onChange: async(val) => {
+        S.certProgress[certId+'_status'] = val;
+        await saveS();
+        const opt = CERT_STATUS_OPTIONS.find(o=>o.value===val);
+        showSnackbar(certId.toUpperCase()+': '+(opt?opt.label:val));
+      },
+    });
+    wrap.id = 'picker-wrap-cst-'+certId;
+    sel.parentNode.replaceChild(wrap, sel);
+  });
+}
+
+/* Override renderCerts to call replaceCertStatusSelects after render */
+const _orig_renderCerts = renderCerts;
+renderCerts = async function() {
+  await _orig_renderCerts();
+  setTimeout(replaceCertStatusSelects, 50);
+}
+
+/* Override openAddTaskModal to replace native select with picker */
+const _orig_openAddTaskModal = openAddTaskModal;
+openAddTaskModal = function(quarterId, quarterLabel) {
+  _orig_openAddTaskModal(quarterId, quarterLabel);
+  // Replace the native select after sheet renders
+  setTimeout(() => {
+    const oldSel = document.getElementById('ctTag');
+    if(oldSel && !document.getElementById('picker-wrap-ctTag')) {
+      const wrap = buildPicker('ctTag', {
+        options: TASK_CAT_OPTIONS,
+        value: 'book',
+        label: 'Category',
+        allowAdd: false,
+      });
+      oldSel.parentNode.replaceChild(wrap, oldSel);
+    }
+  }, 50);
+}
+
+/* Override saveCustomTask to use picker value */
+const _orig_saveCustomTask = saveCustomTask;
+saveCustomTask = async function(quarterId) {
+  ID_MAP['ctTag'] = '_ctTag_proxy';
+  window._ctTag_proxy = { value: pickerGetValue('ctTag')||'book' };
+  await _orig_saveCustomTask(quarterId);
+  delete ID_MAP['ctTag'];
+  delete window._ctTag_proxy;
+}
+
+/* Init pickers after boot */
+const _orig_boot_pickers_placeholder = true;
+
 </script>
 </body>
 </html>
